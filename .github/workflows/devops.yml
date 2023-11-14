@@ -1,0 +1,28 @@
+name: CI-CD Workflow
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t mywebapp /var/www/html
+
+      - name: Test
+        run: |
+          docker run mywebapp npm test  # Assuming a Node.js application
+
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/master'
+        run: |
+          docker push mywebapp:latest
